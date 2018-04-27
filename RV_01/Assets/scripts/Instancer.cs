@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System.IO;
 
 public struct OrientedPoint
 {
@@ -37,6 +38,11 @@ public class Instancer : ScriptableObject
         List<float> scale = GetRandomScale(scaleMin, scaleMax, instancesNumber);
         List<Color> colors = GetRandomColor(colorMin, colorMax, materialNumber);
 
+        if (!Directory.Exists("Assets/Materials/"))
+        {
+            Directory.CreateDirectory("Assets/Materials/");
+        }
+
         for (int i = 0; i < points.Count; ++i)
         {
             int childIndex = (int)(Random.value * childrens.Count);
@@ -51,7 +57,29 @@ public class Instancer : ScriptableObject
             child.transform.localRotation = Quaternion.Euler(child.transform.localRotation.eulerAngles + points[i].angle.eulerAngles);
             child.transform.localScale *= scale[i];
 
+            if (i < materialNumber)
+            {
+                Material mat = new Material(Shader.Find("Standard"));
+                mat.color = colors[i];
+                child.GetComponent<MeshRenderer>().material = mat;
+
+                AssetDatabase.CreateAsset(mat, "Assets/Materials/" + name + "mat_" + i + ".mat");
+            }
+            else
+            {
+                Material mat = (Material)AssetDatabase.LoadAssetAtPath("Assets/Materials/" + name + "mat_" + i % materialNumber + ".mat", typeof(Material));
+                child.GetComponent<MeshRenderer>().material = mat;
+            }
+
         }
+
+        if (!Directory.Exists("Assets/Prefabs/"))
+        {
+            Directory.CreateDirectory("Assets/Prefabs/");
+        }
+
+        PrefabUtility.CreatePrefab("Assets/Prefabs/" + name + ".prefab", par);
+        GameObject.DestroyImmediate(par);
     }
 
     List<OrientedPoint> GetRandomPoints(GameObject obj, int n)
