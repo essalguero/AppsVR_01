@@ -9,8 +9,9 @@ public struct OrientedPoint
     public Quaternion angle;
 }
 
-[CreateAssetMenu(menuName = "U-Tad/Instancer/New Instancer", fileName="New Instancer.asset")]
-public class Instancer : ScriptableObject {
+[CreateAssetMenu(menuName = "U-Tad/Instancer/New Instancer", fileName = "New Instancer.asset")]
+public class Instancer : ScriptableObject
+{
 
     [Header("Instancer Settings")]
 
@@ -35,6 +36,22 @@ public class Instancer : ScriptableObject {
         List<OrientedPoint> points = GetRandomPoints(par, instancesNumber);
         List<float> scale = GetRandomScale(scaleMin, scaleMax, instancesNumber);
         List<Color> colors = GetRandomColor(colorMin, colorMax, materialNumber);
+
+        for (int i = 0; i < points.Count; ++i)
+        {
+            int childIndex = (int)(Random.value * childrens.Count);
+            if (childIndex == childrens.Count)
+            {
+                childIndex -= 1;
+            }
+
+            GameObject child = Instantiate(childrens[childIndex]);
+            child.transform.SetParent(par.transform);
+            child.transform.localPosition = points[i].point;
+            child.transform.localRotation = Quaternion.Euler(child.transform.localRotation.eulerAngles + points[i].angle.eulerAngles);
+            child.transform.localScale *= scale[i];
+
+        }
     }
 
     List<OrientedPoint> GetRandomPoints(GameObject obj, int n)
@@ -69,7 +86,7 @@ public class Instancer : ScriptableObject {
 
             int triIndex = -1;
 
-            for(int i = 0; i < sizes.Length; ++i)
+            for (int i = 0; i < sizes.Length; ++i)
             {
                 if (randomSample <= cumulativeSizes[i])
                 {

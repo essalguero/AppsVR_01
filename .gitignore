@@ -10,3 +10,7 @@ RV_01/ProjectSettings/
 RV_01/Temp/
 
 RV_01/obj/
+
+RV_01/Assets/scenes/etc\.meta
+
+RV_01/Assets/prefabs/Sphere\.prefab\.meta
