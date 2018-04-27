@@ -120,7 +120,15 @@ public class VRCamera : MonoBehaviour {
                 float yOffset;
 
                 ii = i + (int)(crop.x / secW);
-                jj = (j % (frameHeight / secH)) + (int)(crop.y / secH);
+                if (j < (frameHeight / secH))
+                {
+                    jj = j  + (int)(crop.y / secH);
+                }
+                else
+                {
+                    jj = (j - (frameHeight / secH)) + (int)(crop.y / secH);
+                }
+                //jj = (j % (frameHeight / secH)) + (int)(crop.y / secH);
 
                 float xArgle = 90 - ((2 * jj + 1) * 180.0f / (2.0f * height / secH));
                 float yAngle = -180 + ((2 * ii + 1) * 360.0f / (2.0f * width / secW));
